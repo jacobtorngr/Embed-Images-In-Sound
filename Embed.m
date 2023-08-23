@@ -1,9 +1,12 @@
 % Parameters
 image_raw = imread("Example_Image.png");
-sound_len = 5;          % Desired length of sound clip, seconds
+sound_len = 1;          % Desired length of sound clip, seconds
 fs = 44100;             % Sampling frequency
 
-im = double(im2gray(image_raw));
+bins = min(floor(fs*sound_len / size(image_raw,2)), size(image_raw,1));
+im = imresize(image_raw, [bins,...
+    floor(bins*(size(image_raw,2)/size(image_raw,1)))]);
+im = double(im2gray(im));
 im = im - min(im, [],"all"); im = im/max(im,[],"all");
 
 orig_win_len = size(im, 1);
