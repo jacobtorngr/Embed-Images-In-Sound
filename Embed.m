@@ -1,6 +1,6 @@
 % Parameters
 image_raw = imread("Example_Image.png");
-sound_len = 1;          % Desired length of sound clip, seconds
+sound_len = 5;          % Desired length of sound clip, seconds
 fs = 44100;             % Sampling frequency
 
 bins = min(floor(fs*sound_len / size(image_raw,2)), size(image_raw,1));
@@ -19,10 +19,10 @@ f_stretch = linspace(0, fs/2, half_target_win_len);
 output = zeros(2*half_target_win_len * num_wins, 1);
 for i = 0:num_wins-1
     snippet = interp1(f_orig, im(:,i+1), f_stretch,"nearest");
-    sig = ifft(flip(snippet), 2*half_target_win_len);
+    sig = fftshift(ifft(flip(snippet), 2*half_target_win_len));
     output(1+i*2*half_target_win_len:(i+1)*2*half_target_win_len) = real(sig);
 end
-output = normalize(output,'range')*.8;
+output = (2*normalize(output,'range')-1)*.8;
 
 audiowrite("output.wav",output,fs);
 
