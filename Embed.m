@@ -2,6 +2,7 @@
 image_raw = imread("Example_Image.png");
 sound_len = 5;          % Desired length of sound clip, seconds
 fs = 44100;             % Sampling frequency
+stochastic = true;      % Toggle between stochastic or deterministic signal
 
 bins = min(floor(sqrt(sound_len*fs)), size(image_raw,1));
 
@@ -19,7 +20,21 @@ f_stretch = linspace(0, fs/2, half_target_win_len);
 output = zeros(2*half_target_win_len * num_wins, 1);
 for i = 0:num_wins-1
     snippet = interp1(f_orig, im(:,i+1), f_stretch,"nearest");
-    sig = fftshift(ifft(flip(snippet), 2*half_target_win_len));
+
+    switch stochastic
+        case false
+            sig = fftshift(ifft(flip(snippet), 2*half_target_win_len));
+        case true
+            cacs = ifft(flip(snippet), 2*half_target_win_len);
+            acs = real(cacs(1:half_target_win_len));
+            
+            R = toeplitz(acs(1:end-1));
+            r = acs(2:end)';
+            coeff = R\-r;
+            d02 = dot([1; coeff], snippet);
+            w = randn(1,2*half_target_win_len);
+            sig = filter(coeff, d02, w);
+    end
     output(1+i*2*half_target_win_len:(i+1)*2*half_target_win_len) = real(sig);
 end
 output = (2*normalize(output,'range')-1)*.8;
