@@ -40,15 +40,12 @@ for i = 0:num_wins-1
                 d02 = dot([1; coeff], snippet);
                 w = randn(1,2*half_target_win_len);
                 sig = filter(coeff, d02, w);
-                % sig = (2*normalize(sig,'range')-1)*gain;
             end
     end
     output(1+i*2*half_target_win_len:(i+1)*2*half_target_win_len) = real(sig);
 end
 
-% if ~stochastic
-    output = (2*normalize(output,'range')-1)*gain;
-% end
+output = (2*normalize(output,'range')-1)*gain;
 
 audiowrite("output.wav",output,fs);
 
