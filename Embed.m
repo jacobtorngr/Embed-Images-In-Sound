@@ -1,5 +1,5 @@
 % Parameters
-image_raw = imread("Example_Image.png");
+image_raw = imread("cameraman.tif");
 sound_len = 20;         % Desired length of sound clip, seconds
 fs = 44100;             % Sampling frequency
 gain = .8;              % Maximum amplitude
@@ -33,7 +33,8 @@ for i = 0:num_wins-1
             R = toeplitz(acs(1:end-1));
             if rcond(R) < 1e-4
                 j = j+1;
-                % Use previous column
+                % If correlation matrix is ill-conditioned, replicate
+                % previous column
             else
                 r = acs(2:end)';
                 coeff = R\-r;
