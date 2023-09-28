@@ -9,7 +9,7 @@ bins = min(floor(sqrt(sound_len*fs)), size(image_raw,1));
 
 im = imresize(image_raw, [bins, bins]);
 im = double(im2gray(im));
-im = im - min(im, [],"all"); im = im/max(im,[],"all");
+im = im - min(im, [],"all"); im = im/max(im,[],"all"); im = 1-im;
 
 orig_win_len = size(im, 1);
 half_target_win_len = floor(sound_len*fs / orig_win_len / 2);
@@ -38,7 +38,7 @@ for i = 0:num_wins-1
             else
                 r = acs(2:end)';
                 coeff = R\-r;
-                d02 = dot([1; coeff], snippet);
+                d02 = dot([1; coeff], acs);
                 w = randn(1,2*half_target_win_len);
                 sig = filter(coeff, d02, w);
             end
